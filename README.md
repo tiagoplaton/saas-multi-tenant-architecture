@@ -85,3 +85,10 @@ In a real-world scenario, I would improve:
 ## Final thoughts
 
 This project helped me understand that multi-tenant systems are more about architectural decisions than tools — especially when balancing cost, scalability, and data isolation.
+
+
+## What I learned
+
+- Designing multi-tenant systems requires careful data isolation
+- Serverless simplifies scaling but adds complexity in debugging
+- Cost and scalability are strongly connected in SaaS architectures
