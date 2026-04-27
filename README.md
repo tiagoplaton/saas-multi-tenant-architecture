@@ -1,121 +1,87 @@
-# SaaS Multi-Tenant Serverless Architecture on AWS
-
-
-## Architecture diagram
-
-
-![teste](architecture-diagram.png)
+# SaaS Multi-Tenant Architecture on AWS
 
 ## Why I built this
 
-I wanted to better understand how SaaS platforms handle multiple customers without having to spin up separate infrastructure for each one.
+I wanted to understand how SaaS platforms handle multiple customers without creating separate infrastructure for each one.
 
-At first, isolating everything per client seemed safer. But it quickly becomes expensive and hard to scale. So I decided to explore a shared (multi-tenant) architecture and deal with the trade-offs that come with it (especially around data isolation).
-
----
-
-## What this project does
-
-This is a simplified backend for a SaaS application where multiple tenants can:
-
-* create and manage their own data
-* access only what belongs to them
-* share the same infrastructure
-
-The goal here is not the product itself, but how the system behaves when multiple tenants are involved.
+At first, isolating resources per client seemed like the safest option, but it quickly becomes expensive and hard to scale. So I explored a shared (multi-tenant) architecture and the trade-offs involved.
 
 ---
 
-## Architecture (high level)
+## Architecture Overview
 
-I went with a serverless approach:
+![Architecture](architecture-diagram.png)
 
-* S3 + CloudFront → static content delivery
-* API Gateway → entry point for requests
-* Lambda → business logic
-* DynamoDB → data storage
-* Cognito → authentication
-
-This keeps things simple to operate and scales automatically, which is useful for unpredictable workloads.
+This project simulates a serverless SaaS architecture using AWS services.
 
 ---
 
-## Key decisions (and why)
+## How it works
+
+* The frontend is served via S3 and CloudFront
+* Requests go through API Gateway
+* Cognito handles authentication
+* Lambda processes business logic
+* Data is stored in DynamoDB
+
+Each request carries a `tenant_id`, which is used to isolate data within a shared database.
+
+---
+
+## Key decisions
+
+### Multi-tenant model
+
+I used a pooled model, where all tenants share the same infrastructure.
+
+This reduces cost and simplifies scaling, but requires strict control over data access.
+
+---
+
+### Why DynamoDB?
+
+I chose DynamoDB because it scales well and fits the access pattern of multi-tenant systems.
+
+Using `tenant_id` as a partition key helps isolate and organize data efficiently.
+
+---
 
 ### Why serverless?
 
-I didn’t want to deal with infrastructure management for this kind of system. Since SaaS workloads can be very uneven (some tenants active, others not), the pay-per-use model made sense.
+Serverless removes the need to manage infrastructure and works well for unpredictable workloads.
 
-That said, debugging and tracing across multiple services is definitely harder than in a monolithic setup.
-
----
-
-### Why DynamoDB instead of RDS?
-
-I initially considered using a relational database.
-
-The problem is that scaling a relational model across multiple tenants introduces complexity pretty quickly (connections, indexing, cost).
-
-With DynamoDB, I can partition data using `tenant_id`, which keeps the model simple and scalable.
-
-The downside is losing relational flexibility and having to think more about access patterns upfront.
+However, it introduces challenges like debugging and tighter coupling to the cloud provider.
 
 ---
 
-## Multi-tenant strategy
+## Project structure
 
-This project uses a **pooled model**, where all tenants share the same database.
+```
+backend/
+  lambdas/
+    create-item/
+      index.js
 
-Each item is scoped by a `tenant_id`.
-
-This is efficient in terms of cost and scaling, but puts a lot of responsibility on the application layer to ensure proper isolation.
-
-I’m currently enforcing that in the request handling logic.
-
----
-
-## Security considerations
-
-* Authentication handled by Cognito
-* Tenant context extracted from user token
-* Basic validation at the API level
-
-This works for now, but in a real system I would go deeper into:
-
-* fine-grained IAM policies
-* stronger isolation mechanisms
-* audit logging
+infrastructure/
+  terraform/
+    main.tf
+```
 
 ---
 
-## What I found challenging
+## Limitations
 
-One thing that became clear is that multi-tenancy is less about the services and more about controlling access correctly.
+This project is not deployed in AWS. It focuses on architecture design and infrastructure definition.
 
-It's very easy to accidentally expose data if the tenant context is not consistently enforced.
+In a real-world scenario, I would improve:
 
-Also, testing multiple tenants locally is not as straightforward as I expected.
-
----
-
-## What I would improve
-
-If I were to take this further:
-
-* add tenant-level rate limiting
-* implement better observability (structured logs, tracing)
-* introduce a hybrid model for large tenants
-* think about billing per tenant
+* observability (logs, tracing)
+* tenant-level rate limiting
+* billing per tenant
+* stronger security controls
 
 ---
 
 ## Final thoughts
 
-This project made me realize that designing SaaS systems is mostly about trade-offs.
-
-Sharing infrastructure reduces cost, but increases complexity around isolation and control.
-
-I’m still exploring how this would behave at a much larger scale, especially with high-traffic tenants.
-
----
-
+This project helped me understand that multi-tenant architectures are less about the tools and more about the decisions behind them — especially around cost, scalability, and data isolation.
