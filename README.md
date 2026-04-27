@@ -1,5 +1,11 @@
 # SaaS Multi-Tenant Serverless Architecture on AWS
 
+
+## Architecture diagram
+
+
+![teste](architecture-diagram.png)
+
 ## Why I built this
 
 I wanted to better understand how SaaS platforms handle multiple customers without having to spin up separate infrastructure for each one.
@@ -113,7 +119,3 @@ I’m still exploring how this would behave at a much larger scale, especially w
 
 ---
 
-## Architecture diagram
-
-
-![teste](architecture-diagram.png)
