@@ -1,10 +1,10 @@
-# SaaS Multi-Tenant Architecture on AWS
+# SaaS Multi-Tenant Serverless Architecture on AWS
 
 ## Why I built this
 
 I wanted to understand how SaaS platforms handle multiple customers without creating separate infrastructure for each one.
 
-At first, isolating resources per client seemed like the safest option, but it quickly becomes expensive and hard to scale. So I explored a shared (multi-tenant) architecture and the trade-offs involved.
+At first, isolating resources per client seemed safer, but it quickly becomes expensive and hard to scale. So I explored a shared (multi-tenant) architecture and the trade-offs involved.
 
 ---
 
@@ -18,13 +18,13 @@ This project simulates a serverless SaaS architecture using AWS services.
 
 ## How it works
 
-* The frontend is served via S3 and CloudFront
-* Requests go through API Gateway
-* Cognito handles authentication
-* Lambda processes business logic
-* Data is stored in DynamoDB
+* Static frontend is delivered via S3 and CloudFront
+* Requests are handled by API Gateway
+* Cognito manages authentication
+* Lambda executes business logic
+* DynamoDB stores application data
 
-Each request carries a `tenant_id`, which is used to isolate data within a shared database.
+Each request includes a `tenant_id`, which is used to isolate data inside a shared database.
 
 ---
 
@@ -40,17 +40,17 @@ This reduces cost and simplifies scaling, but requires strict control over data 
 
 ### Why DynamoDB?
 
-I chose DynamoDB because it scales well and fits the access pattern of multi-tenant systems.
+DynamoDB scales automatically and fits well with multi-tenant access patterns.
 
-Using `tenant_id` as a partition key helps isolate and organize data efficiently.
+Using `tenant_id` as a partition key allows efficient data isolation and querying.
 
 ---
 
 ### Why serverless?
 
-Serverless removes the need to manage infrastructure and works well for unpredictable workloads.
+Serverless reduces operational overhead and scales automatically.
 
-However, it introduces challenges like debugging and tighter coupling to the cloud provider.
+However, it introduces trade-offs such as more complex debugging and tighter coupling to the cloud provider.
 
 ---
 
@@ -75,7 +75,7 @@ This project is not deployed in AWS. It focuses on architecture design and infra
 
 In a real-world scenario, I would improve:
 
-* observability (logs, tracing)
+* observability (logs and tracing)
 * tenant-level rate limiting
 * billing per tenant
 * stronger security controls
@@ -84,4 +84,4 @@ In a real-world scenario, I would improve:
 
 ## Final thoughts
 
-This project helped me understand that multi-tenant architectures are less about the tools and more about the decisions behind them — especially around cost, scalability, and data isolation.
+This project helped me understand that multi-tenant systems are more about architectural decisions than tools — especially when balancing cost, scalability, and data isolation.
