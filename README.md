@@ -118,3 +118,5 @@ I’m still exploring how this would behave at a much larger scale, especially w
 (To be added)
 
 ---
+
+![teste](architecture-diagram.png)
